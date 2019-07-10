@@ -1,0 +1,15 @@
+int main() do
+  int a
+end
+
+int no_par do
+  int c
+end
+
+void one_param(int a) do
+  int c
+end
+
+int two_params(int a, int b) do
+  int c
+end
