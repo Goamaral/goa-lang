@@ -11,5 +11,5 @@ void one_param(int a) do
 end
 
 int two_params(int a, int b) do
-  int c
+  int c, d
 end

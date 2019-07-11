@@ -46,6 +46,10 @@ void consume_token() {
   if (tokens_it != tokens.end()) stack.push_back(*tokens_it++);
 }
 
+void push_stack(token_t token) {
+  stack.push_back(token);
+}
+
 token_t pop_stack() {
   token_t token = stack.back();
   stack.pop_back();
@@ -55,17 +59,11 @@ token_t pop_stack() {
 
 void invalid_syntax(token_t token, string compiler_source) {
   syntax_errors = true;
-  consume_token();
+  destroy_token();
   cout << "Invalid syntax (" << compiler_source << "), line " << token.line << ": " << token_type_string(token.type) << endl;
 }
 
 tree_t reduce_fdef(tree_t args, tree_t body, bool with_pars) {
-  pop_stack(); // end
-  pop_stack(); // do
-  if (with_pars) {
-    pop_stack(); // rpar
-    pop_stack(); // lpar
-  }
   token_t id = pop_stack();
   token_t datatype = pop_stack();
 
@@ -111,20 +109,38 @@ tree_t fbdy_s() {
   token_t token = peek_token();
   tree_t node(FBDY);
 
-  // Dec next
-  while (is_datatype(token.type)) {
-    tree_t child = decl_s();
+  while (token.type != END) {
+    // Dec next
+    if (is_datatype(token.type)) {
+      tree_t child = decl_s();
+      if (child.type != EMPTY) node.children.push_back(child);
 
-    if (child.type != EMPTY) {
-      node.children.push_back(child);
+      token = peek_token();
+
+      // Further Dec
+      while (token.type == COMMA) {
+        destroy_token();
+        token = peek_token();
+
+        cout << token_type_string(token.type) << endl;
+
+        if (token.type == ID) {
+          push_stack(token_t(child.datatype));
+          consume_token();
+
+          child = reduce_decl();
+          if (child.type != EMPTY) node.children.push_back(child);
+        } else {
+          invalid_syntax(token, "fbdy_s");
+        }
+
+        token = peek_token();
+      }
+    } else {
+      invalid_syntax(token, "fbdy_s");
     }
 
     token = peek_token();
-  }
-
-  if (token.type != END) {
-    invalid_syntax(token, "fbdy_s");
-    return node;
   }
 
   return node;
@@ -169,21 +185,21 @@ tree_t fdef_decls_s() {
 
       // fdef with pars
       if (token.type == LPAR) {
-        consume_token();
+        destroy_token();
         tree_t args = args_s();
         token = peek_token();
 
         if (token.type == RPAR) {
-          consume_token();
+          destroy_token();
           token = peek_token();
 
           if (token.type == DO) {
-            consume_token();
+            destroy_token();
             tree_t body = fbdy_s();
             token = peek_token();
 
             if (token.type == END) {
-              consume_token();
+              destroy_token();
               return reduce_fdef(args, body, true);
             }
           }
@@ -191,12 +207,12 @@ tree_t fdef_decls_s() {
       }
       // fdef without pars
       else if (token.type == DO) {
-        consume_token();
+        destroy_token();
         tree_t body = fbdy_s();
         token = peek_token();
 
         if (token.type == END) {
-          consume_token();
+          destroy_token();
           return reduce_fdef(tree_t(ARGS), body, false);
         }
       }

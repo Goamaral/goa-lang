@@ -27,6 +27,7 @@ struct token_t {
 
   token_t() {}
   token_t(token_type_t _type) : type(_type) {}
+  token_t(token_type_t _type, string _value) : type(_type), value(_value) {}
   token_t(token_type_t _type, string _value, int _line) : type(_type), value(_value), line(_line) {}
 };
 
