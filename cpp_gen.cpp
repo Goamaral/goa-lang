@@ -39,6 +39,11 @@ void gen_code_node(tree_t node, int identation) {
       }
       break;
 
+    case RETURN_N:
+      generate_identation(identation);
+      generated_code_stream << "return " << node.value;
+      break;
+
     default:
       while (node_children_it != node.children.end()) {
         gen_code_node(*node_children_it, identation);

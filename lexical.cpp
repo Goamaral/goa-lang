@@ -19,6 +19,8 @@ string token_type_string(token_type_t type) {
     case SEMI: return "SEMI";
     case RBRACE: return "RBRACE";
     case LBRACE: return "LBRACE";
+    case RETURN: return "RETURN";
+    case INT_LIT: return "INT_LIT";
     case $: return "$";
   }
 
@@ -147,32 +149,79 @@ void do_id_s(char prev, token_type_t guess_type = ID) {
   }
 }
 
-void label_token() {
+void return_id_s(char prev, token_type_t guess_type = ID) {
   char c = next_char();
 
   switch (c) {
-    // void, id
-    case 'v':
-    case 'V':
-      return void_id_s(c);
-
-    // int, id
-    case 'i':
-    case 'I':
-      return int_id_s(c);
-
-    // end, id
-    case 'e':
-    case 'E':
-      return end_id_s(c);
-
-    // do, end
-    case 'd':
-    case 'D':
-      return do_id_s(c);
+    case -1:
+      return lock_token(guess_type);
 
     default:
-      return lock_token(ID);
+      switch (prev) {
+        case 'r':
+        case 'R':
+          if (c == 'e' || c == 'E') return return_id_s(c);
+          if (c == 'n' || c == 'N') return return_id_s(c, RETURN);
+          return lock_token(ID);
+
+        case 'e':
+        case 'E':
+          if (c == 't' || c == 'T') return return_id_s(c);
+          return lock_token(ID);
+
+        case 't':
+        case 'T':
+          if (c == 'u' || c == 'U') return return_id_s(c);
+          return lock_token(ID);
+
+        case 'u':
+        case 'U':
+          if (c == 'r' || c == 'R') return return_id_s(c);
+          return lock_token(ID);
+
+        default:
+          return lock_token(ID);
+      }
+  }
+}
+
+void label_token() {
+  char c = next_char();
+
+  // int_lit
+  regex int_lit_regex("[0-9]+");
+  if (regex_match(token_string, int_lit_regex)) {
+    lock_token(INT_LIT);
+  } else {
+    switch (c) {
+      // void, id
+      case 'v':
+      case 'V':
+        return void_id_s(c);
+
+      // int, id
+      case 'i':
+      case 'I':
+        return int_id_s(c);
+
+      // end, id
+      case 'e':
+      case 'E':
+        return end_id_s(c);
+
+      // do, id
+      case 'd':
+      case 'D':
+        return do_id_s(c);
+
+      // return, id
+      case 'r':
+      case 'R':
+        return return_id_s(c);
+
+      default:
+        return lock_token(ID);
+    }
   }
 }
 

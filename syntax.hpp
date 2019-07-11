@@ -11,7 +11,7 @@ using namespace std;
 
 enum node_type_t {
   PROG,
-  FDEF, DECL, FBDY, ARGS,
+  FDEF, DECL, FBDY, ARGS, RETURN_N,
   EMPTY
 };
 

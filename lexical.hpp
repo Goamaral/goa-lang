@@ -4,6 +4,7 @@
 #include <list>
 #include <string>
 #include <iostream>
+#include <regex>
 
 using namespace std;
 
@@ -14,7 +15,7 @@ enum token_type_t {
   /* OPERATORS */
 
   /* SYNTAX */
-  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE,
+  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT,
 
   // $
   $

@@ -3,7 +3,7 @@
 extern list<token_t> tokens;
 
 static list<token_t>::iterator tokens_it;
-static list<token_t> stack;
+static list<token_t> _stack;
 tree_t tree(PROG);
 bool syntax_errors = false;
 
@@ -15,17 +15,18 @@ string node_type_string(node_type_t type) {
     case FBDY: return "FBDY";
     case EMPTY: return "EMPTY";
     case ARGS: return "ARGS";
+    case RETURN_N: return "RETURN";
   }
 
   return "UNKNOWN";
 }
 
 void print_stack(string id = string()) {
-  list<token_t>::reverse_iterator stack_it = stack.rbegin();
+  list<token_t>::reverse_iterator stack_it = _stack.rbegin();
 
   cout << "--- STACK " << id << " ---" << endl;
 
-  while (stack_it != stack.rend()) {
+  while (stack_it != _stack.rend()) {
     cout << token_type_string(stack_it->type) << endl;
     ++stack_it;
   }
@@ -43,16 +44,16 @@ void destroy_token() {
 }
 
 void consume_token() {
-  if (tokens_it != tokens.end()) stack.push_back(*tokens_it++);
+  if (tokens_it != tokens.end()) _stack.push_back(*tokens_it++);
 }
 
 void push_stack(token_t token) {
-  stack.push_back(token);
+  _stack.push_back(token);
 }
 
 token_t pop_stack() {
-  token_t token = stack.back();
-  stack.pop_back();
+  token_t token = _stack.back();
+  _stack.pop_back();
 
   return token;
 }
@@ -87,6 +88,16 @@ tree_t reduce_decl() {
   return node;
 }
 
+tree_t reduce_return(token_type_t datatype) {
+  token_t id = pop_stack();
+
+  tree_t node(RETURN_N);
+  node.datatype = datatype;
+  node.value = id.value;
+
+  return node;
+}
+
 tree_t decl_s() {
   token_t token = peek_token();
 
@@ -105,7 +116,25 @@ tree_t decl_s() {
   return tree_t();
 }
 
-tree_t fbdy_s() {
+tree_t return_s(token_type_t datatype) {
+  token_t token = peek_token();
+
+  if (token.type == RETURN) {
+    destroy_token();
+    token = peek_token();
+
+    if (token.type == ID || token.type == INT_LIT) {
+      consume_token();
+      return reduce_return(datatype);
+    }
+  }
+
+  invalid_syntax(token, "return_s");
+
+  return tree_t();
+}
+
+tree_t fbdy_s(token_type_t datatype) {
   token_t token = peek_token();
   tree_t node(FBDY);
 
@@ -136,6 +165,11 @@ tree_t fbdy_s() {
 
         token = peek_token();
       }
+    }
+    // Return
+    else if (token.type == RETURN) {
+      tree_t child = return_s(datatype);
+      if (child.type != EMPTY) node.children.push_back(child);
     } else {
       invalid_syntax(token, "fbdy_s");
     }
@@ -176,6 +210,7 @@ tree_t fdef_decls_s() {
   token_t token = peek_token();
 
   if (is_datatype(token.type)) {
+    token_type_t datatype = token.type;
     consume_token();
     token = peek_token();
 
@@ -195,7 +230,7 @@ tree_t fdef_decls_s() {
 
           if (token.type == DO) {
             destroy_token();
-            tree_t body = fbdy_s();
+            tree_t body = fbdy_s(datatype);
             token = peek_token();
 
             if (token.type == END) {
@@ -208,7 +243,7 @@ tree_t fdef_decls_s() {
       // fdef without pars
       else if (token.type == DO) {
         destroy_token();
-        tree_t body = fbdy_s();
+        tree_t body = fbdy_s(datatype);
         token = peek_token();
 
         if (token.type == END) {
@@ -235,7 +270,7 @@ void print_node(tree_t node, int identation = 0) {
 
   cout << node_type_string(node.type);
 
-  if (node.type == DECL || node.type == FDEF) {
+  if (node.type == DECL || node.type == FDEF || node.type == RETURN_N) {
     cout << "(" << token_type_string(node.datatype) << ", " << node.value << ")";
   }
 

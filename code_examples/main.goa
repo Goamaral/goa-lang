@@ -1,9 +1,13 @@
 int main() do
   int a
+
+  return 10
 end
 
 int no_par do
   int c
+
+  return c
 end
 
 void one_param(int a) do
@@ -12,4 +16,6 @@ end
 
 int two_params(int a, int b) do
   int c, d
+
+  return d
 end
