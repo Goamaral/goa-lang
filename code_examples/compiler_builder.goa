@@ -1,7 +1,6 @@
 i32 main(i32 argc) do
-  i32 a
-
   if argc < 2 do
-    Core.println(1)
+    Core.println("No input files")
+    return 1
   end
 end

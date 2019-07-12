@@ -10,7 +10,7 @@ using namespace std;
 
 enum token_type_t {
   /* DATATYPES */
-  VOID, I32,
+  VOID, I32, STRING,
 
   /* OPERATORS */
   LT,

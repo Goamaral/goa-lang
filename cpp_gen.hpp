@@ -12,5 +12,6 @@
 using namespace std;
 
 string generate_code(tree_t);
+void Core(int identation, tree_t call_node);
 
 #endif

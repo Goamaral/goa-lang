@@ -5,6 +5,7 @@ extern tree_t tree;
 static stringstream generated_head_stream = stringstream();
 static stringstream generated_body_stream = stringstream();
 string generated_code;
+static bool iostream_imported = false;
 
 string datatype_string(token_type_t datatype) {
   switch (datatype) {
@@ -16,40 +17,6 @@ string datatype_string(token_type_t datatype) {
 
 void generate_identation(int identation) {
   for (int i = 0; i < identation; ++i) generated_body_stream << "  ";
-}
-
-void Core(int identation, tree_t call_node) {
-  if (!call_node.value.compare("print")) {
-    if (call_node.children.size() > 0) {
-      generated_head_stream << "#include <iostream>\n";
-      generate_identation(identation);
-      generated_body_stream << "std::cout << ";
-      list<tree_t>::iterator args_it = call_node.children.begin();
-      while (args_it != call_node.children.end()) {
-        generated_body_stream << args_it->value;
-        ++args_it;
-
-        if (args_it != call_node.children.end()) {
-          generated_body_stream << " << ";
-        }
-      }
-    }
-  } else if (!call_node.value.compare("println")) {
-    generated_head_stream << "#include <iostream>\n";
-    generate_identation(identation);
-    generated_body_stream << "std::cout << ";
-    list<tree_t>::iterator args_it = call_node.children.begin();
-    while (args_it != call_node.children.end()) {
-      generated_body_stream << args_it->value;
-      ++args_it;
-
-      if (args_it != call_node.children.end()) {
-        generated_body_stream << " << ";
-      }
-    }
-
-    generated_body_stream << " << std::endl";
-  }
 }
 
 void gen_code_node(tree_t node, int identation, bool close = false) {
@@ -100,10 +67,6 @@ void gen_code_node(tree_t node, int identation, bool close = false) {
       generated_body_stream << ")";
       break;
 
-    case ARG:
-      generated_body_stream << node.value;
-      break;
-
     case BIND_N:
       bind_file.open(node.value + ".cpp");
       if (bind_file.is_open()) {
@@ -134,6 +97,7 @@ void gen_code_node(tree_t node, int identation, bool close = false) {
 
     case ID_N:
     case OP_N:
+    case STRING_N:
       generated_body_stream << node.value;
       break;
 
@@ -170,6 +134,8 @@ void gen_function_prototype(tree_t node) {
 string generate_code(tree_t node) {
   list<tree_t>::iterator node_children_it = node.children.begin();
 
+  generated_head_stream << "#include <cstdint>" << endl;
+
   while (node_children_it != node.children.end()) {
     if (node_children_it->type == FDEF) gen_function_prototype(*node_children_it);
 
@@ -187,4 +153,30 @@ string generate_code(tree_t node) {
 
   generated_code = generated_head_stream.str() + "\n\n" + generated_body_stream.str();
   return generated_code;
+}
+
+void Core(int identation, tree_t call_node) {
+  if (!call_node.value.compare("print") || !call_node.value.compare("println")) {
+    if (call_node.children.size() > 0) {
+      if (!iostream_imported) {
+        generated_head_stream << "#include <iostream>\n";
+        iostream_imported = true;
+      }
+
+      generate_identation(identation);
+      generated_body_stream << "std::cout << ";
+      list<tree_t>::iterator args_it = call_node.children.begin();
+      while (args_it != call_node.children.end()) {
+        gen_code_node(*args_it, identation);
+        ++args_it;
+
+        if (args_it != call_node.children.end()) {
+          generated_body_stream << " << ";
+        }
+      }
+
+
+      if (!call_node.value.compare("println")) generated_body_stream << " << std::endl";
+    }
+  }
 }

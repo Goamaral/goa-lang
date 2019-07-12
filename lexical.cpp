@@ -25,6 +25,7 @@ string token_type_string(token_type_t type) {
     case BIND: return "BIND";
     case IF: return "IF";
     case LT: return "LT";
+    case STRING: return "STRING";
     case $: return "$";
   }
 
@@ -72,6 +73,8 @@ void label_token() {
     lock_token(IF);
   } else if (regex_match(token_string, regex("<"))) {
     lock_token(LT);
+  } else if (regex_match(token_string, regex("\"[^\"]*\""))) {
+    lock_token(STRING);
   } else {
     lock_token(ID);
   }
@@ -84,15 +87,22 @@ void id_locker(token_type_t type) {
 }
 
 list<token_t> lexical(string source) {
+  bool capturing_string = false;
   source_it = source.begin();
 
   while (source_it != source.end()) {
     switch (*source_it) {
+      case '"':
+        token_string.push_back(*source_it);
+        if (capturing_string) lock_token(STRING);
+        capturing_string = !capturing_string;
+        break;
+
       /* spaces */
       case '\n':
       case ' ':
       case '\t':
-        if (token_string.size() != 0) {
+        if (!capturing_string && token_string.size() != 0) {
           token_it = token_string.begin();
           label_token();
         }

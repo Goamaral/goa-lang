@@ -10,8 +10,8 @@
 using namespace std;
 
 enum node_type_t {
-  PROG, FDEF, DECL, BODY, ARGS, RETURN_N, CALL, ARG, METHOD_CALL, BIND_N, EXPR,
-  ID_N, OP_N, IF_N,
+  PROG, FDEF, DECL, BODY, ARGS, RETURN_N, CALL, METHOD_CALL, BIND_N, EXPR,
+  ID_N, OP_N, IF_N, STRING_N,
   EMPTY
 };
 
