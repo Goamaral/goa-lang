@@ -64,7 +64,8 @@ int main(int argc, char** argv) {
       file << generated_code;
       file.close();
 
-      system("g++ tmp.cpp -o out && rm tmp.cpp");
+      system("g++ tmp.cpp -o out");
+      if (!debug_code_gen) system("rm tmp.cpp");
     }
   }
 }

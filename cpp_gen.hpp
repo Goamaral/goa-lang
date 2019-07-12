@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 #include <algorithm>
+#include <fstream>
 
 #include "syntax.hpp"
 #include "lexical.hpp"

@@ -16,6 +16,10 @@ string node_type_string(node_type_t type) {
     case EMPTY: return "EMPTY";
     case ARGS: return "ARGS";
     case RETURN_N: return "RETURN";
+    case CALL: return "CALL";
+    case ARG: return "ARG";
+    case BIND_N: return "BIND_N";
+    case METHOD_CALL: return "METHOD_CALL";
   }
 
   return "UNKNOWN";
@@ -27,7 +31,7 @@ void print_stack(string id = string()) {
   cout << "--- STACK " << id << " ---" << endl;
 
   while (stack_it != _stack.rend()) {
-    cout << token_type_string(stack_it->type) << endl;
+    cout << token_type_string(stack_it->type) << " " << stack_it->value << endl;
     ++stack_it;
   }
 
@@ -58,48 +62,88 @@ token_t pop_stack() {
   return token;
 }
 
+token_t peek_stack() {
+  return _stack.back();
+}
+
 void invalid_syntax(token_t token, string compiler_source) {
   syntax_errors = true;
   destroy_token();
   cout << "Invalid syntax (" << compiler_source << "), line " << token.line << ": " << token_type_string(token.type) << endl;
 }
 
-tree_t reduce_fdef(tree_t args, tree_t body, bool with_pars) {
+tree_t reduce_fdef(int line, tree_t args, tree_t body) {
   token_t id = pop_stack();
   token_t datatype = pop_stack();
 
   tree_t node(FDEF);
   node.datatype = datatype.type;
   node.value = id.value;
+  node.line = line;
   node.children.push_back(args);
   node.children.push_back(body);
 
   return node;
 }
 
-tree_t reduce_decl() {
+tree_t reduce_decl(int line) {
   token_t id = pop_stack();
   token_t datatype = pop_stack();
 
   tree_t node(DECL);
   node.datatype = datatype.type;
   node.value = id.value;
+  node.line = line;
 
   return node;
 }
 
-tree_t reduce_return(token_type_t datatype) {
+tree_t reduce_return(int line, token_type_t datatype) {
   token_t id = pop_stack();
 
   tree_t node(RETURN_N);
   node.datatype = datatype;
   node.value = id.value;
+  node.line = line;
+
+  return node;
+}
+
+tree_t reduce_bind(int line) {
+  token_t id = pop_stack();
+
+  tree_t node(BIND_N);
+  node.value = id.value;
+  node.line = line;
+
+  return node;
+}
+
+tree_t reduce_call(int line, list<tree_t> args) {
+  token_t id = pop_stack();
+
+  tree_t node(CALL);
+  node.value = id.value;
+  node.line = line;
+  node.children = args;
+
+  return node;
+}
+
+tree_t reduce_method_call(int line, tree_t call) {
+  token_t id = pop_stack();
+
+  tree_t node(METHOD_CALL);
+  node.value = id.value;
+  node.line = line;
+  node.children.push_back(call);
 
   return node;
 }
 
 tree_t decl_s() {
   token_t token = peek_token();
+  int line = token.line;
 
   if (is_datatype(token.type)) {
     consume_token();
@@ -107,7 +151,7 @@ tree_t decl_s() {
 
     if (token.type == ID) {
       consume_token();
-      return reduce_decl();
+      return reduce_decl(line);
     }
   }
 
@@ -118,6 +162,7 @@ tree_t decl_s() {
 
 tree_t return_s(token_type_t datatype) {
   token_t token = peek_token();
+  int line = token.line;
 
   if (token.type == RETURN) {
     destroy_token();
@@ -125,7 +170,7 @@ tree_t return_s(token_type_t datatype) {
 
     if (token.type == ID || token.type == INT_LIT) {
       consume_token();
-      return reduce_return(datatype);
+      return reduce_return(line, datatype);
     }
   }
 
@@ -134,12 +179,65 @@ tree_t return_s(token_type_t datatype) {
   return tree_t();
 }
 
+tree_t call_methodcall_s(bool from_method_call = false) {
+  token_t token = peek_token();
+  int line = token.line;
+
+  if (token.type == ID) {
+    consume_token();
+    token = peek_token();
+
+    // Call
+    if (token.type == LPAR) {
+      destroy_token();
+      token = peek_token();
+      list<tree_t> args;
+
+      while (token.type == ID) {
+        consume_token();
+        token = peek_token();
+
+        token_t id = pop_stack();
+        tree_t arg(ARG);
+        arg.value = id.value;
+        arg.line = id.line;
+        args.push_back(arg);
+
+        if (token.type == COMMA) {
+          destroy_token();
+          token = peek_token();
+        } else if (token.type != RPAR) {
+          break;
+        }
+      }
+
+      if (token.type == RPAR) {
+        destroy_token();
+        return reduce_call(line, args);
+      }
+    }
+    // Method Call
+    else if (token.type == DOT && !from_method_call) {
+      destroy_token();
+      token = peek_token();
+
+      tree_t call = call_methodcall_s(true);
+      return reduce_method_call(line, call);
+    }
+  }
+
+  invalid_syntax(token, "call_s");
+
+  return tree_t();
+}
+
 tree_t fbdy_s(token_type_t datatype) {
   token_t token = peek_token();
   tree_t node(FBDY);
+  node.line = token.line;
 
   while (token.type != END) {
-    // Dec next
+    // Decl
     if (is_datatype(token.type)) {
       tree_t child = decl_s();
       if (child.type != EMPTY) node.children.push_back(child);
@@ -151,13 +249,11 @@ tree_t fbdy_s(token_type_t datatype) {
         destroy_token();
         token = peek_token();
 
-        cout << token_type_string(token.type) << endl;
-
         if (token.type == ID) {
           push_stack(token_t(child.datatype));
           consume_token();
 
-          child = reduce_decl();
+          child = reduce_decl(token.line);
           if (child.type != EMPTY) node.children.push_back(child);
         } else {
           invalid_syntax(token, "fbdy_s");
@@ -169,6 +265,11 @@ tree_t fbdy_s(token_type_t datatype) {
     // Return
     else if (token.type == RETURN) {
       tree_t child = return_s(datatype);
+      if (child.type != EMPTY) node.children.push_back(child);
+    }
+    // Call, METHOD_CALL
+    else if (token.type == ID) {
+      tree_t child = call_methodcall_s();
       if (child.type != EMPTY) node.children.push_back(child);
     } else {
       invalid_syntax(token, "fbdy_s");
@@ -183,6 +284,7 @@ tree_t fbdy_s(token_type_t datatype) {
 tree_t args_s() {
   token_t token = peek_token();
   tree_t node(ARGS);
+  node.line = token.line;
 
   while (is_datatype(token.type)) {
     tree_t child = decl_s();
@@ -208,6 +310,7 @@ tree_t args_s() {
 
 tree_t fdef_decls_s() {
   token_t token = peek_token();
+  int line = token.line;
 
   if (is_datatype(token.type)) {
     token_type_t datatype = token.type;
@@ -215,6 +318,7 @@ tree_t fdef_decls_s() {
     token = peek_token();
 
     if (token.type == ID) {
+      int id_line = token.line;
       consume_token();
       token = peek_token();
 
@@ -235,7 +339,7 @@ tree_t fdef_decls_s() {
 
             if (token.type == END) {
               destroy_token();
-              return reduce_fdef(args, body, true);
+              return reduce_fdef(line, args, body);
             }
           }
         }
@@ -248,17 +352,38 @@ tree_t fdef_decls_s() {
 
         if (token.type == END) {
           destroy_token();
-          return reduce_fdef(tree_t(ARGS), body, false);
+          tree_t args(ARGS);
+          args.line = id_line;
+          return reduce_fdef(line, args, body);
         }
       }
       // dec
-      else if (token.type == ID) {
-        return reduce_decl();
+      else {
+        return reduce_decl(token.line);
       }
     }
   }
 
   invalid_syntax(token, "fdef_decls_s");
+
+  return tree_t();
+}
+
+tree_t bind_s() {
+  token_t token = peek_token();
+  int line = token.line;
+
+  if (token.type == BIND) {
+    destroy_token();
+    token = peek_token();
+
+    if (token.type == ID) {
+      consume_token();
+      return reduce_bind(line);
+    }
+  }
+
+  invalid_syntax(token, "bind_s");
 
   return tree_t();
 }
@@ -272,6 +397,8 @@ void print_node(tree_t node, int identation = 0) {
 
   if (node.type == DECL || node.type == FDEF || node.type == RETURN_N) {
     cout << "(" << token_type_string(node.datatype) << ", " << node.value << ")";
+  } else if (node.type == CALL || node.type == ARG || node.type == BIND_N || node.type == METHOD_CALL) {
+    cout << "(" << node.value << ")";
   }
 
   cout << endl;
@@ -289,14 +416,24 @@ void print_tree(tree_t node) {
 tree_t syntax() {
   tokens_it = tokens.begin();
   token_t token = peek_token();
+  tree_t child;
 
   while (token.type != $) {
-    tree_t child = fdef_decls_s();
+    switch (token.type) {
+      case BIND:
+        child = bind_s();
+        break;
 
-    if (child.type != EMPTY) {
-      tree.children.push_back(child);
+      default:
+        if (is_datatype(token.type)) {
+          child = fdef_decls_s();
+        } else {
+          invalid_syntax(token, "syntax");
+        }
+        break;
     }
 
+    if (child.type != EMPTY) tree.children.push_back(child);
     token = peek_token();
   }
 

@@ -11,7 +11,7 @@ using namespace std;
 
 enum node_type_t {
   PROG,
-  FDEF, DECL, FBDY, ARGS, RETURN_N,
+  FDEF, DECL, FBDY, ARGS, RETURN_N, CALL, ARG, METHOD_CALL, BIND_N,
   EMPTY
 };
 
@@ -22,6 +22,7 @@ struct tree_t {
   token_type_t datatype = $;
   string value;
   list<tree_t> children;
+  int line = 0;
 
   tree_t() {};
   tree_t(node_type_t _type): type(_type) {}

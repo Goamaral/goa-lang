@@ -10,12 +10,13 @@ using namespace std;
 
 enum token_type_t {
   /* DATATYPES */
-  VOID, INT,
+  VOID, I32,
 
   /* OPERATORS */
 
   /* SYNTAX */
-  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT,
+  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT, IMPOER,
+  DOT, BIND, IF,
 
   // $
   $
