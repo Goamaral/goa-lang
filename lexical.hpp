@@ -13,6 +13,7 @@ enum token_type_t {
   VOID, I32,
 
   /* OPERATORS */
+  LT,
 
   /* SYNTAX */
   END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT, IMPOER,
@@ -36,6 +37,7 @@ struct token_t {
 void print_tokens(list<token_t>);
 string token_type_string(token_type_t);
 bool is_datatype(token_type_t);
+bool is_operator(token_type_t);
 
 void lock_token(token_type_t);
 char next_char();

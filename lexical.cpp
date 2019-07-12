@@ -24,6 +24,7 @@ string token_type_string(token_type_t type) {
     case DOT: return "DOT";
     case BIND: return "BIND";
     case IF: return "IF";
+    case LT: return "LT";
     case $: return "$";
   }
 
@@ -39,6 +40,10 @@ void print_tokens(list<token_t> tokens) {
 
 bool is_datatype(token_type_t type) {
   return type == I32 || type == VOID;
+}
+
+bool is_operator(token_type_t type) {
+  return type == LT;
 }
 
 
@@ -65,6 +70,8 @@ void label_token() {
     lock_token(BIND);
   } else if (regex_match(token_string, regex("if"))) {
     lock_token(IF);
+  } else if (regex_match(token_string, regex("<"))) {
+    lock_token(LT);
   } else {
     lock_token(ID);
   }

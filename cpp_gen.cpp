@@ -61,14 +61,13 @@ void gen_code_node(tree_t node, int identation, bool close = false) {
       generated_body_stream << endl << datatype_string(node.datatype) << " " << node.value << "(";
       gen_code_node(*(node_children_it++), identation); // Args
       generated_body_stream << ") {\n";
-      gen_code_node(*node_children_it, identation + 1); // Body
+      gen_code_node(*node_children_it, identation + 1, true); // Body
       generated_body_stream << "}\n";
       break;
 
     case DECL:
       generate_identation(identation);
       generated_body_stream << datatype_string(node.datatype) << " " << node.value;
-      if (close) generated_body_stream << ";\n";
       break;
 
     case ARGS:
@@ -122,10 +121,30 @@ void gen_code_node(tree_t node, int identation, bool close = false) {
       if (!node.value.compare("Core")) Core(identation, *(node.children.begin()));
       break;
 
+    case IF_N:
+      generate_identation(identation);
+      generated_body_stream << node.value << " (";
+      gen_code_node(*node_children_it, identation);
+      generated_body_stream << ") {\n";
+      ++node_children_it;
+      gen_code_node(*node_children_it, identation + 1, true);
+      generate_identation(identation);
+      generated_body_stream << "}\n";
+      break;
+
+    case ID_N:
+    case OP_N:
+      generated_body_stream << node.value;
+      break;
+
     default:
       while (node_children_it != node.children.end()) {
         gen_code_node(*node_children_it, identation);
-        generated_body_stream << ";\n";
+        if (close) {
+          if (node_children_it->type != IF_N) {
+            generated_body_stream << ";\n";
+          }
+        }
         ++node_children_it;
       }
       break;

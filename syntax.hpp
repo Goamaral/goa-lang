@@ -10,12 +10,10 @@
 using namespace std;
 
 enum node_type_t {
-  PROG,
-  FDEF, DECL, FBDY, ARGS, RETURN_N, CALL, ARG, METHOD_CALL, BIND_N,
+  PROG, FDEF, DECL, BODY, ARGS, RETURN_N, CALL, ARG, METHOD_CALL, BIND_N, EXPR,
+  ID_N, OP_N, IF_N,
   EMPTY
 };
-
-string node_type_string(node_type_t type);
 
 struct tree_t {
   node_type_t type = EMPTY;
@@ -33,5 +31,7 @@ token_t next_token();
 
 tree_t def_liststat_s();
 tree_t syntax();
+string node_type_string(node_type_t type);
+tree_t body_s(token_type_t);
 
 #endif

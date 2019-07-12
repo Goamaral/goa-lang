@@ -1,8 +1,6 @@
-bind lexical
-bind syntax
-bind cpp_gen
-
 i32 main(i32 argc) do
+  i32 a
+
   if argc < 2 do
     Core.println(1)
   end
