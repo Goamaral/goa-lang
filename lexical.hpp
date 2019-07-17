@@ -16,8 +16,8 @@ enum token_type_t {
   LT,
 
   /* SYNTAX */
-  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT, IMPOER,
-  DOT, BIND, IF,
+  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT, DOT,
+  BIND, IF, ELSE,
 
   // $
   $

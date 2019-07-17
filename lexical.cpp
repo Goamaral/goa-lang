@@ -106,6 +106,8 @@ list<token_t> lexical(string source) {
           token_it = token_string.begin();
           label_token();
         }
+
+        if (capturing_string) token_string.push_back(*source_it);
         break;
 
       default:
