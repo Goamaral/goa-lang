@@ -1,3 +1,4 @@
 .vscode/
 compiler
 tmp.cpp
+out
