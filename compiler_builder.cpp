@@ -68,4 +68,6 @@ int main(int argc, char** argv) {
       if (!debug_code_gen) system("rm tmp.cpp");
     }
   }
+
+  return 0;
 }

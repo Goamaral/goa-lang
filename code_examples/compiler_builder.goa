@@ -3,7 +3,9 @@ i32 main(i32 argc) do
     Core.println("No input files")
     return 1
   else
-    Core.println("Else")
+    range_loop(argc) do |i|
+      Core.println(i)
+    end
   end
 
   return 0
