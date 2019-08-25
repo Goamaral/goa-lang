@@ -89,10 +89,20 @@ void gen_code_node(tree_t node, int identation, bool close = false) {
       generated_body_stream << node.value << " (";
       gen_code_node(*node_children_it, identation);
       generated_body_stream << ") {\n";
+      
       ++node_children_it;
       gen_code_node(*node_children_it, identation + 1, true);
       generate_identation(identation);
-      generated_body_stream << "}\n";
+      generated_body_stream << "}";
+
+      ++node_children_it;
+      if (node_children_it != node.children.end()) {
+        generated_body_stream << " else {\n";
+        gen_code_node(*node_children_it, identation + 1, true);
+        generate_identation(identation);
+      }
+
+      generated_body_stream << "}\n\n";
       break;
 
     case ID_N:

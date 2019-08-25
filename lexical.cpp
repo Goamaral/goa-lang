@@ -26,6 +26,7 @@ string token_type_string(token_type_t type) {
     case IF: return "IF";
     case LT: return "LT";
     case STRING: return "STRING";
+    case ELSE: return "ELSE";
     case $: return "$";
   }
 
@@ -35,7 +36,7 @@ string token_type_string(token_type_t type) {
 void print_tokens(list<token_t> tokens) {
   cout << endl << "--- TOKENS ---" << endl;
   for (auto token : tokens) {
-    cout << token_type_string(token.type) << "(" << token.line  << "): " << token.value << endl;
+    cout << token_type_string(token.type) << "(" << token.id << ", " << token.line  << "): " << token.value << endl;
   }
 }
 
@@ -50,7 +51,7 @@ bool is_operator(token_type_t type) {
 
 void lock_token(token_type_t type) {
   if (token_string.size() == 0) return;
-  tokens.push_back(token_t(type, token_string, line));
+  tokens.push_back(token_t(type, token_string, line, tokens.size()));
   token_string = "";
 }
 
@@ -71,6 +72,8 @@ void label_token() {
     lock_token(BIND);
   } else if (regex_match(token_string, regex("if"))) {
     lock_token(IF);
+  } else if (regex_match(token_string, regex("else"))) {
+    lock_token(ELSE);
   } else if (regex_match(token_string, regex("<"))) {
     lock_token(LT);
   } else if (regex_match(token_string, regex("\"[^\"]*\""))) {
@@ -106,6 +109,8 @@ list<token_t> lexical(string source) {
           token_it = token_string.begin();
           label_token();
         }
+
+        if (capturing_string) token_string.push_back(*source_it);
         break;
 
       default:

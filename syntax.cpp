@@ -24,6 +24,7 @@ string node_type_string(node_type_t type) {
     case OP_N: return "OP_N";
     case STRING_N: return "STRING_N";
     case METHOD_CALL: return "METHOD_CALL";
+    case ELSE: return "ELSE_N";
   }
 
   return "UNKNOWN";
@@ -43,7 +44,7 @@ void print_stack(string id = string()) {
 }
 
 token_t peek_token() {
-  if (tokens_it == tokens.end()) return token_t($);
+  if (tokens_it == tokens.end()) return token_t($, -1);
   return *tokens_it;
 }
 
@@ -134,12 +135,13 @@ tree_t reduce_call(int line, list<tree_t> args) {
   return node;
 }
 
-tree_t reduce_if(int line, tree_t cond, tree_t body) {
+tree_t reduce_if(int line, tree_t cond, tree_t if_body, tree_t else_body = tree_t()) {
   tree_t node(IF_N);
   node.value = "if";
   node.line = line;
   node.children.push_back(cond);
-  node.children.push_back(body);
+  node.children.push_back(if_body);
+  if (else_body.type != EMPTY) node.children.push_back(else_body);
 
   return node;
 }
@@ -322,6 +324,15 @@ tree_t if_s(token_type_t datatype) {
       if (token.type == END) {
         destroy_token();
         return reduce_if(line, cond, if_body);
+      } else if (token.type == ELSE) {
+        destroy_token();
+        tree_t else_body = body_s(datatype);
+
+        token = peek_token();
+        if (token.type == END) {
+          destroy_token();
+          return reduce_if(line, cond, if_body, else_body);
+        }
       }
     }
   }
@@ -336,7 +347,7 @@ tree_t body_s(token_type_t datatype) {
   tree_t node(BODY);
   node.line = token.line;
 
-  while (token.type != END) {
+  while (token.type != END && token.type != ELSE) {
     // Decl
     if (is_datatype(token.type)) {
       tree_t child = decl_s();
@@ -350,7 +361,7 @@ tree_t body_s(token_type_t datatype) {
         token = peek_token();
 
         if (token.type == ID) {
-          push_stack(token_t(child.datatype));
+          push_stack(token_t(child.datatype, -1));
           consume_token();
 
           child = reduce_decl(token.line);

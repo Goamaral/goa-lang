@@ -2,5 +2,9 @@ i32 main(i32 argc) do
   if argc < 2 do
     Core.println("No input files")
     return 1
+  else
+    Core.println("Else")
   end
+
+  return 0
 end

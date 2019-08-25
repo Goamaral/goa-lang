@@ -16,8 +16,8 @@ enum token_type_t {
   LT,
 
   /* SYNTAX */
-  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT, IMPOER,
-  DOT, BIND, IF,
+  END, LPAR, RPAR, DO, ID, COMMA, SEMI, RBRACE, LBRACE, RETURN, INT_LIT, DOT,
+  BIND, IF, ELSE,
 
   // $
   $
@@ -27,11 +27,12 @@ struct token_t {
   token_type_t type = $;
   string value;
   int line;
+  int id;
 
   token_t() {}
-  token_t(token_type_t _type) : type(_type) {}
-  token_t(token_type_t _type, string _value) : type(_type), value(_value) {}
-  token_t(token_type_t _type, string _value, int _line) : type(_type), value(_value), line(_line) {}
+  token_t(token_type_t _type, int _id) : type(_type), id(_id) {}
+  token_t(token_type_t _type, string _value, int _id) : type(_type), value(_value), id(_id) {}
+  token_t(token_type_t _type, string _value, int _line, int _id) : type(_type), value(_value), line(_line), id(_id) {}
 };
 
 void print_tokens(list<token_t>);
