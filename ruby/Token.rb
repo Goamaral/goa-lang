@@ -18,4 +18,12 @@ class Token
     "#{@type.to_s} (id: #{@id}, line: #{@line}): #{@value}"
   end
 
+  def node_to_s
+    if @value != ""
+      "#{@type.to_s} (n_children: #{@children.size}): #{@value}"
+    else
+      "#{@type.to_s} (n_children: #{@children.size})"
+    end
+  end
+
 end

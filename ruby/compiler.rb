@@ -44,7 +44,7 @@ def main
     tokens = lexer.run(code, debug: debug_lexer)
 
     parser = Parser.new
-    # syntax_tree = parser.run(tokens, debug: debug_syntax)
+    syntax_tree = parser.run(tokens, debug: debug_syntax)
 
     # generator = CodeGenerator.new
     # generated_code = generator.run(syntax_tree, debug: debug_code_gen)

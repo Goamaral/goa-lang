@@ -23,7 +23,7 @@ class Lexer
       case c
       when "\""
         @token_string << c
-        lock_token(Type::STRING) if capturing_string
+        lock_token(Type::STRING_LIT) if capturing_string
         capturing_string = !capturing_string
 
       else
@@ -67,7 +67,7 @@ class Lexer
 
     label_token if @token_string.size != 0
 
-    @tokens << Token.new(scope: Scope::LEXER, type: Type::FINISH_PARSING, value: "$", line: @line, id: tokens.size)
+    @tokens << Token.new(scope: Scope::LEXING, type: Type::FINISH_PARSING, value: "$", line: @line, id: tokens.size)
 
     print_tokens if debug
 
@@ -76,7 +76,7 @@ class Lexer
 
   def lock_token(type)
     if @token_string.size != 0
-      @tokens << Token.new(scope: Scope::LEXER, type: type, value: @token_string, line: @line, id: tokens.size)
+      @tokens << Token.new(scope: Scope::LEXING, type: type, value: @token_string, line: @line, id: tokens.size)
       @token_string = ""
     end
   end

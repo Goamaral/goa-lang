@@ -8,7 +8,7 @@ class Type
   # OPERATORS #
   LT = :LT
 
-  # SYNTAX #
+  # TOKENS #
   END_ = :END
   LPAR = :LPAR
   RPAR = :RPAR
@@ -19,15 +19,24 @@ class Type
   RBRACE = :RBRACE
   LBRACE = :LBRACE
   RETURN = :RETURN
-  INT_LIT = :INT_LIT
   DOT = :DOT
   BIND = :BIND
   IF = :IF
   ELSE = :ELSE
+
+  # LITERALS #
+  INT_LIT = :INT_LIT
   STRING_LIT = :STRING_LIT
+
+  # NODES #
+  PROG = :PROG
 
   # FINISH_PARSING and EMPTY #
   FINISH_PARSING = :FINISH_PARSING
   EMPTY = :EMPTY
+
+  def is_datatype
+    [:VOID, :I32, :STRING].include?(self)
+  end
 
 end

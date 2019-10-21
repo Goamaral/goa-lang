@@ -1,7 +1,7 @@
 class Scope
 
   NONE = :NONE
-  LEXER = :LEXER
-  PARSER = :PARSER
+  LEXING = :LEXING
+  PARSING = :PARSING
 
 end
