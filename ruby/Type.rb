@@ -1,0 +1,33 @@
+class Type
+  
+  # DATATYPES #
+  VOID = :VOID
+  I32 = :I32
+  STRING = :STRING
+
+  # OPERATORS #
+  LT = :LT
+
+  # SYNTAX #
+  END_ = :END
+  LPAR = :LPAR
+  RPAR = :RPAR
+  DO = :DO
+  ID = :ID
+  COMMA = :COMMA
+  SEMI = :SEMI
+  RBRACE = :RBRACE
+  LBRACE = :LBRACE
+  RETURN = :RETURN
+  INT_LIT = :INT_LIT
+  DOT = :DOT
+  BIND = :BIND
+  IF = :IF
+  ELSE = :ELSE
+  STRING_LIT = :STRING_LIT
+
+  # FINISH_PARSING and EMPTY #
+  FINISH_PARSING = :FINISH_PARSING
+  EMPTY = :EMPTY
+
+end
