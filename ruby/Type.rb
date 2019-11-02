@@ -1,6 +1,7 @@
 class Type
   
   # DATATYPES #
+  DATATYPES = [:VOID, :I32, :STRING]
   VOID = :VOID
   I32 = :I32
   STRING = :STRING
@@ -30,13 +31,12 @@ class Type
 
   # NODES #
   PROG = :PROG
+  DECL = :DECL
+  FDEF = :FDEF
+  ARG = :ARG
 
   # FINISH_PARSING and EMPTY #
   FINISH_PARSING = :FINISH_PARSING
   EMPTY = :EMPTY
-
-  def is_datatype
-    [:VOID, :I32, :STRING].include?(self)
-  end
 
 end

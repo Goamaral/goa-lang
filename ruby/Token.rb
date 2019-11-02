@@ -3,11 +3,12 @@ require './Type.rb'
 
 class Token
 
-  attr_accessor :scope, :type, :value, :line, :id, :children
+  attr_accessor :scope, :type, :datatype, :value, :line, :id, :children
 
   def initialize(args)
     @scope = args[:scope] || Scope::NONE
     @type = args[:type] || Type::EMPTY
+    @datatype = args[:datatype] || Type::EMPTY
     @value = args[:value] || ""
     @line = args[:line] || 0
     @id = args[:id] || -1
@@ -15,15 +16,14 @@ class Token
   end
 
   def to_s
-    "#{@type.to_s} (id: #{@id}, line: #{@line}): #{@value}"
-  end
+    args = []
+    args << "datatype: #{@datatype}" unless @datatype == Type::EMPTY
+    args << "value: #{value}" unless @value == ""
+    args << "line: #{line}" unless @line == 0
+    args << "id: #{id}" unless @id == -1
+    args_s = args.size == 0 ? "" : "(#{args.join(", ")})"
 
-  def node_to_s
-    if @value != ""
-      "#{@type.to_s} (n_children: #{@children.size}): #{@value}"
-    else
-      "#{@type.to_s} (n_children: #{@children.size})"
-    end
+    "#{@type} #{args_s}"
   end
 
 end

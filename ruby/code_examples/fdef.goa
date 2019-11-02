@@ -1,0 +1,15 @@
+i32 fdef_with_one_arg(i32 arg1) do
+
+end
+
+i32 fdef_with_two_args(i32 arg1, i32 arg2) do
+
+end
+
+i32 fdef_without_args_with_pars() do
+
+end
+
+i32 fdef_without_args_without_pars do
+
+end

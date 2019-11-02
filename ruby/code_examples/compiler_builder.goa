@@ -1,11 +1,11 @@
-bind "goa.c"
+bind "array.c"
 
 i32 main(i32 argc) do
   if argc < 2 do
     Core.println("No input files")
     return 1
   else
-    range_loop(argc) do |i|
+    range_loop(a) do |i|
       Core.println(i)
     end
   end
