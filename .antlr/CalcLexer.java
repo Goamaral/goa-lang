@@ -1,4 +1,4 @@
-// Generated from /home/goa/Projects/goa_lang/antlr/Calc.g4 by ANTLR 4.7.1
+// Generated from /home/goa/Projects/goa_lang/Calc.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;
@@ -10,7 +10,7 @@ import org.antlr.v4.runtime.misc.*;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CalcLexer extends Lexer {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -25,16 +25,25 @@ public class CalcLexer extends Lexer {
 		"DEFAULT_MODE"
 	};
 
-	public static final String[] ruleNames = {
-		"MUL", "DIV", "ADD", "SUB", "NUMBER", "WHITESPACE"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"MUL", "DIV", "ADD", "SUB", "NUMBER", "WHITESPACE"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "'*'", "'/'", "'+'", "'-'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, "MUL", "DIV", "ADD", "SUB", "NUMBER", "WHITESPACE"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "'*'", "'/'", "'+'", "'-'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, "MUL", "DIV", "ADD", "SUB", "NUMBER", "WHITESPACE"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**

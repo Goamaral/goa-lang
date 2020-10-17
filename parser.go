@@ -4,7 +4,6 @@ import (
   "./parser"
   "github.com/antlr/antlr4/runtime/Go/antlr"
   "fmt"
-  "strconv"
 )
 
 type calcListener struct {
@@ -31,39 +30,12 @@ func (l *calcListener) pop() int {
   return result
 }
 
-func (l *calcListener) ExitMulDiv(c *parser.MulDivContext) {
-  right, left := l.pop(), l.pop()
-
-  switch c.GetOp().GetTokenType() {
-  case parser.CalcParserMUL:
-    l.push(left * right)
-  case parser.CalcParserDIV:
-    l.push(left / right)
-  default:
-    panic(fmt.Sprintf("unexpected op: %s", c.GetOp().GetText()))
-  }
+func (l *calcListener) ExitBinaryOperation(ctx *parser.BinaryOperationContext) {
+  fmt.Printf("ExitExpression: %s\n", ctx.GetText());
 }
 
-func (l *calcListener) ExitAddSub(c *parser.AddSubContext) {
-  right, left := l.pop(), l.pop()
-
-  switch c.GetOp().GetTokenType() {
-  case parser.CalcParserADD:
-    l.push(left + right)
-  case parser.CalcParserSUB:
-    l.push(left - right)
-  default:
-    panic(fmt.Sprintf("unexpected op: %s", c.GetOp().GetText()))
-  }
-}
-
-func (l *calcListener) ExitNumber(c *parser.NumberContext) {
-  i, err := strconv.Atoi(c.GetText())
-  if err != nil {
-    panic(err.Error())
-  }
-
-  l.push(i)
+func (l *calcListener) ExitNumber(ctx *parser.NumberContext) {
+  fmt.Printf("ExitNumber: %s\n", ctx.GetText());
 }
 
 func calc(input string) int {
@@ -81,9 +53,9 @@ func calc(input string) int {
   var listener calcListener
   antlr.ParseTreeWalkerDefault.Walk(&listener, p.Start())
 
-  return listener.pop()
+  return 0 //listener.pop()
 }
 
 func main() {
-  calc("1 + 2 * 3")
+  fmt.Printf("%d\n", calc("1 + 2 * 3"))
 }

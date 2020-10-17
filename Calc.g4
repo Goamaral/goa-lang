@@ -12,7 +12,7 @@ WHITESPACE: [ \r\n\t]+ -> skip;
 start : expression EOF;
 
 expression
-  : expression op=('*'|'/') expression # MulDiv
-  | expression op=('+'|'-') expression # AddSub
+  : expression op=('*'|'/') expression # BinaryOperation
+  | expression op=('+'|'-') expression # BinaryOperation
   | NUMBER                             # Number
   ;

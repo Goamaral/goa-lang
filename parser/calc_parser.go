@@ -272,13 +272,13 @@ func (s *NumberContext) ExitRule(listener antlr.ParseTreeListener) {
 	}
 }
 
-type MulDivContext struct {
+type BinaryOperationContext struct {
 	*ExpressionContext
 	op antlr.Token
 }
 
-func NewMulDivContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *MulDivContext {
-	var p = new(MulDivContext)
+func NewBinaryOperationContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *BinaryOperationContext {
+	var p = new(BinaryOperationContext)
 
 	p.ExpressionContext = NewEmptyExpressionContext()
 	p.parser = parser
@@ -287,15 +287,15 @@ func NewMulDivContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *MulDivC
 	return p
 }
 
-func (s *MulDivContext) GetOp() antlr.Token { return s.op }
+func (s *BinaryOperationContext) GetOp() antlr.Token { return s.op }
 
-func (s *MulDivContext) SetOp(v antlr.Token) { s.op = v }
+func (s *BinaryOperationContext) SetOp(v antlr.Token) { s.op = v }
 
-func (s *MulDivContext) GetRuleContext() antlr.RuleContext {
+func (s *BinaryOperationContext) GetRuleContext() antlr.RuleContext {
 	return s
 }
 
-func (s *MulDivContext) AllExpression() []IExpressionContext {
+func (s *BinaryOperationContext) AllExpression() []IExpressionContext {
 	var ts = s.GetTypedRuleContexts(reflect.TypeOf((*IExpressionContext)(nil)).Elem())
 	var tst = make([]IExpressionContext, len(ts))
 
@@ -308,7 +308,7 @@ func (s *MulDivContext) AllExpression() []IExpressionContext {
 	return tst
 }
 
-func (s *MulDivContext) Expression(i int) IExpressionContext {
+func (s *BinaryOperationContext) Expression(i int) IExpressionContext {
 	var t = s.GetTypedRuleContext(reflect.TypeOf((*IExpressionContext)(nil)).Elem(), i)
 
 	if t == nil {
@@ -318,89 +318,31 @@ func (s *MulDivContext) Expression(i int) IExpressionContext {
 	return t.(IExpressionContext)
 }
 
-func (s *MulDivContext) MUL() antlr.TerminalNode {
+func (s *BinaryOperationContext) MUL() antlr.TerminalNode {
 	return s.GetToken(CalcParserMUL, 0)
 }
 
-func (s *MulDivContext) DIV() antlr.TerminalNode {
+func (s *BinaryOperationContext) DIV() antlr.TerminalNode {
 	return s.GetToken(CalcParserDIV, 0)
 }
 
-func (s *MulDivContext) EnterRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(CalcListener); ok {
-		listenerT.EnterMulDiv(s)
-	}
-}
-
-func (s *MulDivContext) ExitRule(listener antlr.ParseTreeListener) {
-	if listenerT, ok := listener.(CalcListener); ok {
-		listenerT.ExitMulDiv(s)
-	}
-}
-
-type AddSubContext struct {
-	*ExpressionContext
-	op antlr.Token
-}
-
-func NewAddSubContext(parser antlr.Parser, ctx antlr.ParserRuleContext) *AddSubContext {
-	var p = new(AddSubContext)
-
-	p.ExpressionContext = NewEmptyExpressionContext()
-	p.parser = parser
-	p.CopyFrom(ctx.(*ExpressionContext))
-
-	return p
-}
-
-func (s *AddSubContext) GetOp() antlr.Token { return s.op }
-
-func (s *AddSubContext) SetOp(v antlr.Token) { s.op = v }
-
-func (s *AddSubContext) GetRuleContext() antlr.RuleContext {
-	return s
-}
-
-func (s *AddSubContext) AllExpression() []IExpressionContext {
-	var ts = s.GetTypedRuleContexts(reflect.TypeOf((*IExpressionContext)(nil)).Elem())
-	var tst = make([]IExpressionContext, len(ts))
-
-	for i, t := range ts {
-		if t != nil {
-			tst[i] = t.(IExpressionContext)
-		}
-	}
-
-	return tst
-}
-
-func (s *AddSubContext) Expression(i int) IExpressionContext {
-	var t = s.GetTypedRuleContext(reflect.TypeOf((*IExpressionContext)(nil)).Elem(), i)
-
-	if t == nil {
-		return nil
-	}
-
-	return t.(IExpressionContext)
-}
-
-func (s *AddSubContext) ADD() antlr.TerminalNode {
+func (s *BinaryOperationContext) ADD() antlr.TerminalNode {
 	return s.GetToken(CalcParserADD, 0)
 }
 
-func (s *AddSubContext) SUB() antlr.TerminalNode {
+func (s *BinaryOperationContext) SUB() antlr.TerminalNode {
 	return s.GetToken(CalcParserSUB, 0)
 }
 
-func (s *AddSubContext) EnterRule(listener antlr.ParseTreeListener) {
+func (s *BinaryOperationContext) EnterRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CalcListener); ok {
-		listenerT.EnterAddSub(s)
+		listenerT.EnterBinaryOperation(s)
 	}
 }
 
-func (s *AddSubContext) ExitRule(listener antlr.ParseTreeListener) {
+func (s *BinaryOperationContext) ExitRule(listener antlr.ParseTreeListener) {
 	if listenerT, ok := listener.(CalcListener); ok {
-		listenerT.ExitAddSub(s)
+		listenerT.ExitBinaryOperation(s)
 	}
 }
 
@@ -461,7 +403,7 @@ func (p *CalcParser) expression(_p int) (localctx IExpressionContext) {
 			p.GetErrorHandler().Sync(p)
 			switch p.GetInterpreter().AdaptivePredict(p.GetTokenStream(), 0, p.GetParserRuleContext()) {
 			case 1:
-				localctx = NewMulDivContext(p, NewExpressionContext(p, _parentctx, _parentState))
+				localctx = NewBinaryOperationContext(p, NewExpressionContext(p, _parentctx, _parentState))
 				p.PushNewRecursionContext(localctx, _startState, CalcParserRULE_expression)
 				p.SetState(10)
 
@@ -473,14 +415,14 @@ func (p *CalcParser) expression(_p int) (localctx IExpressionContext) {
 
 					var _lt = p.GetTokenStream().LT(1)
 
-					localctx.(*MulDivContext).op = _lt
+					localctx.(*BinaryOperationContext).op = _lt
 
 					_la = p.GetTokenStream().LA(1)
 
 					if !(_la == CalcParserMUL || _la == CalcParserDIV) {
 						var _ri = p.GetErrorHandler().RecoverInline(p)
 
-						localctx.(*MulDivContext).op = _ri
+						localctx.(*BinaryOperationContext).op = _ri
 					} else {
 						p.GetErrorHandler().ReportMatch(p)
 						p.Consume()
@@ -492,7 +434,7 @@ func (p *CalcParser) expression(_p int) (localctx IExpressionContext) {
 				}
 
 			case 2:
-				localctx = NewAddSubContext(p, NewExpressionContext(p, _parentctx, _parentState))
+				localctx = NewBinaryOperationContext(p, NewExpressionContext(p, _parentctx, _parentState))
 				p.PushNewRecursionContext(localctx, _startState, CalcParserRULE_expression)
 				p.SetState(13)
 
@@ -504,14 +446,14 @@ func (p *CalcParser) expression(_p int) (localctx IExpressionContext) {
 
 					var _lt = p.GetTokenStream().LT(1)
 
-					localctx.(*AddSubContext).op = _lt
+					localctx.(*BinaryOperationContext).op = _lt
 
 					_la = p.GetTokenStream().LA(1)
 
 					if !(_la == CalcParserADD || _la == CalcParserSUB) {
 						var _ri = p.GetErrorHandler().RecoverInline(p)
 
-						localctx.(*AddSubContext).op = _ri
+						localctx.(*BinaryOperationContext).op = _ri
 					} else {
 						p.GetErrorHandler().ReportMatch(p)
 						p.Consume()

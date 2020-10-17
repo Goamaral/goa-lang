@@ -14,11 +14,8 @@ type CalcListener interface {
 	// EnterNumber is called when entering the Number production.
 	EnterNumber(c *NumberContext)
 
-	// EnterMulDiv is called when entering the MulDiv production.
-	EnterMulDiv(c *MulDivContext)
-
-	// EnterAddSub is called when entering the AddSub production.
-	EnterAddSub(c *AddSubContext)
+	// EnterBinaryOperation is called when entering the BinaryOperation production.
+	EnterBinaryOperation(c *BinaryOperationContext)
 
 	// ExitStart is called when exiting the start production.
 	ExitStart(c *StartContext)
@@ -26,9 +23,6 @@ type CalcListener interface {
 	// ExitNumber is called when exiting the Number production.
 	ExitNumber(c *NumberContext)
 
-	// ExitMulDiv is called when exiting the MulDiv production.
-	ExitMulDiv(c *MulDivContext)
-
-	// ExitAddSub is called when exiting the AddSub production.
-	ExitAddSub(c *AddSubContext)
+	// ExitBinaryOperation is called when exiting the BinaryOperation production.
+	ExitBinaryOperation(c *BinaryOperationContext)
 }

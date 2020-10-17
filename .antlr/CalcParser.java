@@ -1,4 +1,4 @@
-// Generated from /home/goa/Projects/goa_lang/antlr/Calc.g4 by ANTLR 4.7.1
+// Generated from /home/goa/Projects/goa_lang/Calc.g4 by ANTLR 4.8
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CalcParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.8", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -19,16 +19,25 @@ public class CalcParser extends Parser {
 		MUL=1, DIV=2, ADD=3, SUB=4, NUMBER=5, WHITESPACE=6;
 	public static final int
 		RULE_start = 0, RULE_expression = 1;
-	public static final String[] ruleNames = {
-		"start", "expression"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"start", "expression"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "'*'", "'/'", "'+'", "'-'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, "MUL", "DIV", "ADD", "SUB", "NUMBER", "WHITESPACE"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "'*'", "'/'", "'+'", "'-'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, "MUL", "DIV", "ADD", "SUB", "NUMBER", "WHITESPACE"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -78,6 +87,7 @@ public class CalcParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class StartContext extends ParserRuleContext {
 		public ExpressionContext expression() {
 			return getRuleContext(ExpressionContext.class,0);
@@ -127,7 +137,7 @@ public class CalcParser extends Parser {
 		public TerminalNode NUMBER() { return getToken(CalcParser.NUMBER, 0); }
 		public NumberContext(ExpressionContext ctx) { copyFrom(ctx); }
 	}
-	public static class MulDivContext extends ExpressionContext {
+	public static class BinaryOperationContext extends ExpressionContext {
 		public Token op;
 		public List<ExpressionContext> expression() {
 			return getRuleContexts(ExpressionContext.class);
@@ -135,17 +145,11 @@ public class CalcParser extends Parser {
 		public ExpressionContext expression(int i) {
 			return getRuleContext(ExpressionContext.class,i);
 		}
-		public MulDivContext(ExpressionContext ctx) { copyFrom(ctx); }
-	}
-	public static class AddSubContext extends ExpressionContext {
-		public Token op;
-		public List<ExpressionContext> expression() {
-			return getRuleContexts(ExpressionContext.class);
-		}
-		public ExpressionContext expression(int i) {
-			return getRuleContext(ExpressionContext.class,i);
-		}
-		public AddSubContext(ExpressionContext ctx) { copyFrom(ctx); }
+		public TerminalNode MUL() { return getToken(CalcParser.MUL, 0); }
+		public TerminalNode DIV() { return getToken(CalcParser.DIV, 0); }
+		public TerminalNode ADD() { return getToken(CalcParser.ADD, 0); }
+		public TerminalNode SUB() { return getToken(CalcParser.SUB, 0); }
+		public BinaryOperationContext(ExpressionContext ctx) { copyFrom(ctx); }
 	}
 
 	public final ExpressionContext expression() throws RecognitionException {
@@ -186,15 +190,15 @@ public class CalcParser extends Parser {
 					switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
 					case 1:
 						{
-						_localctx = new MulDivContext(new ExpressionContext(_parentctx, _parentState));
+						_localctx = new BinaryOperationContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(10);
 						if (!(precpred(_ctx, 3))) throw new FailedPredicateException(this, "precpred(_ctx, 3)");
 						setState(11);
-						((MulDivContext)_localctx).op = _input.LT(1);
+						((BinaryOperationContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==MUL || _la==DIV) ) {
-							((MulDivContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((BinaryOperationContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -207,15 +211,15 @@ public class CalcParser extends Parser {
 						break;
 					case 2:
 						{
-						_localctx = new AddSubContext(new ExpressionContext(_parentctx, _parentState));
+						_localctx = new BinaryOperationContext(new ExpressionContext(_parentctx, _parentState));
 						pushNewRecursionContext(_localctx, _startState, RULE_expression);
 						setState(13);
 						if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 						setState(14);
-						((AddSubContext)_localctx).op = _input.LT(1);
+						((BinaryOperationContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==ADD || _la==SUB) ) {
-							((AddSubContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((BinaryOperationContext)_localctx).op = (Token)_errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;

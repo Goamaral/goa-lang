@@ -16,8 +16,6 @@
   - f32
   - f64
 
-- ** 
-
 ***
 
 **Variable Definition** `i32 variable = 197`
@@ -47,6 +45,8 @@ end
 ****
 
 **Main Definition**
+```
 main do
   code
 end
+```

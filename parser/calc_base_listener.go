@@ -33,14 +33,8 @@ func (s *BaseCalcListener) EnterNumber(ctx *NumberContext) {}
 // ExitNumber is called when production Number is exited.
 func (s *BaseCalcListener) ExitNumber(ctx *NumberContext) {}
 
-// EnterMulDiv is called when production MulDiv is entered.
-func (s *BaseCalcListener) EnterMulDiv(ctx *MulDivContext) {}
+// EnterBinaryOperation is called when production BinaryOperation is entered.
+func (s *BaseCalcListener) EnterBinaryOperation(ctx *BinaryOperationContext) {}
 
-// ExitMulDiv is called when production MulDiv is exited.
-func (s *BaseCalcListener) ExitMulDiv(ctx *MulDivContext) {}
-
-// EnterAddSub is called when production AddSub is entered.
-func (s *BaseCalcListener) EnterAddSub(ctx *AddSubContext) {}
-
-// ExitAddSub is called when production AddSub is exited.
-func (s *BaseCalcListener) ExitAddSub(ctx *AddSubContext) {}
+// ExitBinaryOperation is called when production BinaryOperation is exited.
+func (s *BaseCalcListener) ExitBinaryOperation(ctx *BinaryOperationContext) {}
