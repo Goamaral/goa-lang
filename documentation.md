@@ -23,7 +23,6 @@
 ***
 
 **Import Local Package** `import "./package_name"`
-- Core Packages are imported by default
 
 ***
 

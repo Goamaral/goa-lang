@@ -4,6 +4,7 @@ import (
   "./parser"
   "github.com/antlr/antlr4/runtime/Go/antlr"
   "fmt"
+  "strconv"
 )
 
 type calcListener struct {
@@ -30,12 +31,27 @@ func (l *calcListener) pop() int {
   return result
 }
 
-func (l *calcListener) ExitBinaryOperation(ctx *parser.BinaryOperationContext) {
-  fmt.Printf("ExitExpression: %s\n", ctx.GetText());
+func (l *calcListener) EnterNumber(ctx *parser.NumberContext) {
+  number, _ := strconv.Atoi(ctx.GetText())
+  l.push(number)
+  fmt.Printf("PUSH %s\n", ctx.GetText())
 }
 
-func (l *calcListener) ExitNumber(ctx *parser.NumberContext) {
-  fmt.Printf("ExitNumber: %s\n", ctx.GetText());
+func (l *calcListener) ExitBinaryOperation(ctx *parser.BinaryOperationContext) {
+  arg2 := l.pop()
+  arg1 := l.pop()
+  result := 0
+
+  switch ctx.GetOp().GetTokenType() {
+  case parser.CalcParserMUL:
+    fmt.Printf("MUL(%d, %d)\n", arg1, arg2)
+    result = arg1 * arg2
+  case parser.CalcParserADD:
+    fmt.Printf("ADD(%d, %d)\n", arg1, arg2)
+    result = arg1 + arg2
+  }
+
+  l.push(result)
 }
 
 func calc(input string) int {
@@ -53,9 +69,9 @@ func calc(input string) int {
   var listener calcListener
   antlr.ParseTreeWalkerDefault.Walk(&listener, p.Start())
 
-  return 0 //listener.pop()
+  return listener.pop()
 }
 
 func main() {
-  fmt.Printf("%d\n", calc("1 + 2 * 3"))
+  fmt.Printf("%d\n", calc("1 + 2 * 3 + 4"))
 }
